@@ -34,8 +34,15 @@ Write it down — this is what Asterisk will dial.
 ## Step 3 — Create an IP phone account for the Raspberry Pi
 Navigate to: **Telefonie → Telefoniegeräte → Neues Gerät hinzufügen**
 
-Select device type: **Telefon (mit und ohne Anrufbeantworter)**
-Then select connection type: **LAN/WLAN (IP-Telefon)**
+First, select connection type (Anschlusstyp): **Festnetzanschluss und DSL Anschluss**
+(not "IP-basierter Anschluss" — the 7270 is a DSL device)
+
+Then select device type: **Telefon** (not "ISDN Telefonanlage" or "Faxgerät")
+Then select connection method: **LAN/WLAN (IP-Telefon)**
+Then select number type: **Festnetzrufnummer** (not "Internetrufnummer")
+Then select: **eine Festnetznummer** (not "mehrere Festnetznummern")
+Enter Rufnummer: any value works (e.g. `0`) — no external line is connected, only
+internal calls are used. The FritzBox requires a number here but it is never dialled.
 
 Fill in:
 | Field | Value |
@@ -103,6 +110,12 @@ Set the IP configuration to **DHCP** (the upstream router assigns an address).
 If the upstream requires a static IP, fill in the fields manually.
 
 Save and confirm the reboot if prompted.
+
+**Subnet change:** After switching to cable mode the FritzBox moves from
+192.168.178.1 to **192.168.188.1**. Your computer still has a 192.168.178.x
+address and cannot reach the new IP. Disconnect and reconnect your LAN cable
+(or disable/enable your network interface) to get a fresh DHCP lease in the
+192.168.188.x subnet. Then open http://192.168.188.1 to continue.
 
 ### 7b — Plug in the cable
 After saving:
