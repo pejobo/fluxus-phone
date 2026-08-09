@@ -2,13 +2,14 @@
 [Unit]
 Description=Fluxus phone trigger
 After=asterisk.service
-Requires=asterisk.service
+Wants=asterisk.service
 
 [Service]
 EnvironmentFile=/etc/fluxus-trigger.env
-ExecStart=/usr/bin/python3 /usr/local/bin/fluxus-trigger.py
+ExecStart=/usr/bin/python3 -u /usr/local/bin/fluxus-trigger.py
 Restart=always
 RestartSec=10
+StartLimitIntervalSec=0
 User=asterisk
 
 [Install]

@@ -1,5 +1,6 @@
 # Deploy to: /usr/local/bin/fluxus-trigger.py
 import os
+import sys
 import time
 import random
 import socket
@@ -38,15 +39,15 @@ def scan_audio_files():
 playlist = []
 
 while True:
-    if not playlist:
-        playlist = scan_audio_files()
-        random.shuffle(playlist)
-    sound = playlist.pop() if playlist else FALLBACK_SOUND
-    if not Path(sound + ".wav").exists() and sound != FALLBACK_SOUND:
-        continue
     try:
+        if not playlist:
+            playlist = scan_audio_files()
+            random.shuffle(playlist)
+        sound = playlist.pop() if playlist else FALLBACK_SOUND
+        if not Path(sound + ".wav").exists() and sound != FALLBACK_SOUND:
+            continue
         ami_originate(sound)
     except Exception as e:
-        pass  # silent fail, try again next cycle
+        print(f"error: {e}", file=sys.stderr)
     wait = random.uniform(MIN_WAIT, MAX_WAIT)
     time.sleep(wait)
