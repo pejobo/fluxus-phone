@@ -1,4 +1,5 @@
 #!/bin/bash
+# Deploy to: /usr/local/bin/convert-audio.sh
 # Convert m4a files from ORIGINAL/ to 8kHz mono WAV in the stick root.
 # provide directory of usb stick as parameter
 

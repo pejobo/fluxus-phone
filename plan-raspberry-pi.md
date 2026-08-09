@@ -254,7 +254,8 @@ File: `/etc/udev/rules.d/99-fluxus-audio.rules`
 ACTION=="add", SUBSYSTEM=="block", ENV{ID_FS_LABEL}=="FLUX-PHON", \
   RUN+="/usr/bin/systemd-mount --no-block --automount=no \
   --options=uid=asterisk,gid=asterisk,umask=022 \
-  $env{DEVNAME} /mnt/audio"
+  $env{DEVNAME} /mnt/audio", \
+  RUN+="/usr/bin/systemctl start --no-block fluxus-convert.service"
 
 ACTION=="remove", SUBSYSTEM=="block", ENV{ID_FS_LABEL}=="FLUX-PHON", \
   RUN+="/usr/bin/systemd-umount /mnt/audio"
