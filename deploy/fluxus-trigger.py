@@ -1,3 +1,4 @@
+# Deploy to: /usr/local/bin/fluxus-trigger.py
 import os
 import time
 import random
@@ -10,8 +11,8 @@ AMI_HOST = os.environ.get("AMI_HOST", "127.0.0.1")
 AMI_PORT = int(os.environ.get("AMI_PORT", "5038"))
 AMI_USER = os.environ["AMI_USER"]
 AMI_SECRET = os.environ["AMI_SECRET"]
-MIN_WAIT = int(os.environ.get("MIN_WAIT", "300"))
-MAX_WAIT = int(os.environ.get("MAX_WAIT", "1800"))
+MIN_WAIT = int(os.environ.get("MIN_WAIT", "30"))
+MAX_WAIT = int(os.environ.get("MAX_WAIT", "60"))
 
 def ami_originate(sound_file):
     action = (
@@ -41,6 +42,8 @@ while True:
         playlist = scan_audio_files()
         random.shuffle(playlist)
     sound = playlist.pop() if playlist else FALLBACK_SOUND
+    if not Path(sound + ".wav").exists() and sound != FALLBACK_SOUND:
+        continue
     try:
         ami_originate(sound)
     except Exception as e:

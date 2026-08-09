@@ -14,6 +14,16 @@ fi
 for src in "$DIR/ORIGINAL"/*.m4a; do
     [[ -f "$src" ]] || continue
     name=$(basename "$src" .m4a)
-    ffmpeg -i "$src" -ar 8000 -ac 1 -sample_fmt s16 -y "$DIR/${name}.wav"
-    echo "converted: $DIR/${name}.wav"
+    dest="$DIR/${name}.wav"
+    [[ "$dest" -nt "$src" ]] && continue
+    ffmpeg -i "$src" -ar 8000 -ac 1 -sample_fmt s16 -y "$dest"
+    echo "converted: $dest"
+done
+
+for wav in "$DIR"/*.wav; do
+    [[ -f "$wav" ]] || continue
+    name=$(basename "$wav" .wav)
+    [[ -f "$DIR/ORIGINAL/${name}.m4a" ]] && continue
+    rm "$wav"
+    echo "removed: $wav"
 done
