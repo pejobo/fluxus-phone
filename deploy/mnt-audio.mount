@@ -1,0 +1,9 @@
+# Deploy to: /etc/systemd/system/mnt-audio.mount
+[Unit]
+Description=FLUX-PHON audio USB stick
+
+[Mount]
+What=/dev/disk/by-label/FLUX-PHON
+Where=/mnt/audio
+Type=vfat
+Options=uid=asterisk,gid=asterisk,umask=022,nofail

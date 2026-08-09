@@ -1,0 +1,11 @@
+# Deploy to: /etc/systemd/system/fluxus-convert.path
+[Unit]
+Description=Watch for audio stick mount
+
+[Path]
+PathExists=/mnt/audio/ORIGINAL
+TriggerLimitBurst=1
+TriggerLimitIntervalSec=30
+
+[Install]
+WantedBy=multi-user.target

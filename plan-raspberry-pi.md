@@ -118,14 +118,15 @@ sudo systemctl restart sshd
 ## Part 3 — Install packages
 
 ```bash
-sudo apt install -y espeak-ng python3 sox
+sudo apt install -y espeak-ng python3 sox ffmpeg
 ```
 
 | Package | Purpose |
 |---|---|
-| `espeak-ng` | offline TTS for pre-rendering instruction audio |
+| `espeak-ng` | offline TTS for pre-rendering fallback audio |
 | `python3` | trigger script runtime |
-| `sox` | WAV conversion / normalisation |
+| `sox` | WAV conversion for fallback audio |
+| `ffmpeg` | M4A to WAV conversion on stick plug |
 
 SSH is already enabled by default on Raspberry Pi OS.
 
@@ -239,35 +240,30 @@ mkfs.vfat -F 32 -n FLUX-PHON /dev/sdX1
 ```
 Label must be exactly `FLUX-PHON` — the udev rule matches on this.
 
-Place WAV files in the root of the stick, e.g.:
+Create an `ORIGINAL/` directory on the stick and place your M4A audio files there:
 ```
-instruction_01.wav
-instruction_02.wav
-...
+ORIGINAL/
+    anweisung_01.m4a
+    anweisung_02.m4a
+    ...
 ```
-Files must be 8 kHz mono (see plan-asterisk.md Step 5 for conversion).
+On plug, the Pi auto-converts them to 8 kHz mono WAV in the stick root.
 
-### 6b — Create the udev rule for auto-mount / auto-unmount
-File: `/etc/udev/rules.d/99-fluxus-audio.rules`
+### 6b — Deploy mount helper and udev rule
 
-```
-ACTION=="add", SUBSYSTEM=="block", ENV{ID_FS_LABEL}=="FLUX-PHON", \
-  RUN+="/usr/bin/systemd-mount --no-block --automount=no \
-  --options=uid=asterisk,gid=asterisk,umask=022 \
-  $env{DEVNAME} /mnt/audio", \
-  RUN+="/usr/bin/systemctl start --no-block fluxus-convert.service"
+Deploy:
+- [`deploy/fluxus-mount.sh`](deploy/fluxus-mount.sh) → `/usr/local/bin/fluxus-mount.sh`
+- [`deploy/convert-audio.sh`](deploy/convert-audio.sh) → `/usr/local/bin/convert-audio.sh`
+- [`deploy/99-fluxus-audio.rules`](deploy/99-fluxus-audio.rules) → `/etc/udev/rules.d/99-fluxus-audio.rules`
 
-ACTION=="remove", SUBSYSTEM=="block", ENV{ID_FS_LABEL}=="FLUX-PHON", \
-  RUN+="/usr/bin/systemd-umount /mnt/audio"
-```
-
-`systemd-mount` is safe to call from udev — it spawns a transient mount unit
-without blocking the udev event queue.
-
-Reload udev rules:
 ```bash
+sudo chmod +x /usr/local/bin/fluxus-mount.sh /usr/local/bin/convert-audio.sh
 sudo udevadm control --reload-rules
 ```
+
+On plug, the mount script mounts the stick and runs the audio conversion
+(`ORIGINAL/*.m4a` → 8 kHz mono WAV). Uses `systemd-run` to escape the udev
+mount namespace.
 
 ### 6c — Test hot-plug
 Plug in the audio stick. After a moment:

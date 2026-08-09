@@ -9,18 +9,17 @@ voice instruction from a WAV file.
 
 ## Prerequisites
 - FritzBox plan completed: SIP credentials and analog phone extension known
-- Arch Linux ARM installed, Pi reachable on the FritzBox network
-- Asterisk installed: `pacman -S asterisk`
+- Raspberry Pi OS installed, Pi reachable on the FritzBox network
+- Asterisk built from source (see plan-raspberry-pi.md Part 3)
 
 ---
 
-## Step 1 — Install and enable Asterisk
+## Step 1 — Enable Asterisk
 ```bash
-pacman -S asterisk
-systemctl enable asterisk
+sudo systemctl enable asterisk
 ```
 Config lives in `/etc/asterisk/`. Default config ships with many sample files —
-most can be left alone. We only touch: `pjsip.conf`, `extensions.conf`.
+most can be left alone. We only touch: `pjsip.conf`, `extensions.conf`, `manager.conf`.
 
 ---
 
@@ -119,8 +118,8 @@ write=originate
 
 ## Step 5 — Pre-render instruction audio
 Audio files live on the **audio USB stick** (mounted at `/mnt/audio/`), not on
-the system stick. This makes updates easy: unmount, take the stick to any
-computer, swap the WAVs, plug back in.
+the SD card. This makes updates easy: unplug the stick, edit on any computer,
+plug back in. M4A files in the `ORIGINAL/` folder are auto-converted on plug.
 
 Generate files on any machine with espeak-ng, then copy to the stick:
 
@@ -140,7 +139,7 @@ File naming: any `.wav` filename works. The trigger script picks up all WAV file
 from `/mnt/audio/` regardless of naming convention.
 
 The **fallback audio** (played when the stick is absent) is pre-rendered once
-onto the system stick — see plan-raspberry-pi.md Part 8d.
+onto the SD card — see plan-raspberry-pi.md Part 6d.
 
 ---
 
