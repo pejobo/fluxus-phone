@@ -235,9 +235,9 @@ updated from any computer without touching the SD card.
 ### 6a — Format the audio stick (on your computer)
 ```bash
 # identify the stick — double-check with lsblk
-mkfs.vfat -F 32 -n FLUXUS_AUDIO /dev/sdX1
+mkfs.vfat -F 32 -n FLUX-PHON /dev/sdX1
 ```
-Label must be exactly `FLUXUS_AUDIO` — the udev rule matches on this.
+Label must be exactly `FLUX-PHON` — the udev rule matches on this.
 
 Place WAV files in the root of the stick, e.g.:
 ```
@@ -251,12 +251,12 @@ Files must be 8 kHz mono (see plan-asterisk.md Step 5 for conversion).
 File: `/etc/udev/rules.d/99-fluxus-audio.rules`
 
 ```
-ACTION=="add", SUBSYSTEM=="block", ENV{ID_FS_LABEL}=="FLUXUS_AUDIO", \
+ACTION=="add", SUBSYSTEM=="block", ENV{ID_FS_LABEL}=="FLUX-PHON", \
   RUN+="/usr/bin/systemd-mount --no-block --automount=no \
   --options=uid=asterisk,gid=asterisk,umask=022 \
   $env{DEVNAME} /mnt/audio"
 
-ACTION=="remove", SUBSYSTEM=="block", ENV{ID_FS_LABEL}=="FLUXUS_AUDIO", \
+ACTION=="remove", SUBSYSTEM=="block", ENV{ID_FS_LABEL}=="FLUX-PHON", \
   RUN+="/usr/bin/systemd-umount /mnt/audio"
 ```
 

@@ -58,6 +58,8 @@ allow=ulaw
 allow=alaw
 outbound_auth=fritzbox-auth
 aors=fritzbox
+from_user=620
+from_domain=fritz.box
 
 ; Registration — Pi registers to FritzBox as an IP phone
 [fritzbox-reg]
