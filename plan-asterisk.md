@@ -136,8 +136,8 @@ sox /tmp/instruction_01_raw.wav \
 # repeat for each instruction
 ```
 
-File naming: `instruction_01.wav`, `instruction_02.wav`, … any count.
-The trigger script discovers them automatically by scanning `/mnt/audio/`.
+File naming: any `.wav` filename works. The trigger script picks up all WAV files
+from `/mnt/audio/` regardless of naming convention.
 
 The **fallback audio** (played when the stick is absent) is pre-rendered once
 onto the system stick — see plan-raspberry-pi.md Part 8d.

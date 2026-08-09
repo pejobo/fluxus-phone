@@ -5,6 +5,7 @@ import socket
 from pathlib import Path
 
 AUDIO_DIR = Path(os.environ.get("AUDIO_DIR", "/mnt/audio"))
+FALLBACK_SOUND = os.environ.get("FALLBACK_SOUND", "/var/lib/asterisk/sounds/fluxus/no_audio_stick")
 AMI_HOST = os.environ.get("AMI_HOST", "127.0.0.1")
 AMI_PORT = int(os.environ.get("AMI_PORT", "5038"))
 AMI_USER = os.environ["AMI_USER"]
@@ -30,17 +31,19 @@ def ami_originate(sound_file):
         s.sendall(action.encode())
         s.recv(1024)
 
-def scan_instructions():
-    return [f.stem for f in AUDIO_DIR.glob("*.wav")]
+def scan_audio_files():
+    return [str(AUDIO_DIR / f.stem) for f in AUDIO_DIR.glob("*.wav")]
+
+playlist = []
 
 while True:
-    wait = random.uniform(MIN_WAIT, MAX_WAIT)
-    time.sleep(wait)
-    instructions = scan_instructions()
-    if not instructions:
-        continue
-    sound = random.choice(instructions)
+    if not playlist:
+        playlist = scan_audio_files()
+        random.shuffle(playlist)
+    sound = playlist.pop() if playlist else FALLBACK_SOUND
     try:
         ami_originate(sound)
     except Exception as e:
         pass  # silent fail, try again next cycle
+    wait = random.uniform(MIN_WAIT, MAX_WAIT)
+    time.sleep(wait)
