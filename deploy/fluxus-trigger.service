@@ -1,3 +1,4 @@
+# Deploy to: /etc/systemd/system/fluxus-trigger.service
 [Unit]
 Description=Fluxus phone trigger
 After=asterisk.service

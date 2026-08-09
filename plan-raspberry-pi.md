@@ -118,17 +118,49 @@ sudo systemctl restart sshd
 ## Part 3 — Install packages
 
 ```bash
-sudo apt install -y asterisk espeak-ng python3 sox
+sudo apt install -y espeak-ng python3 sox
 ```
 
 | Package | Purpose |
 |---|---|
-| `asterisk` | SIP engine, dialplan, audio playback |
 | `espeak-ng` | offline TTS for pre-rendering instruction audio |
 | `python3` | trigger script runtime |
 | `sox` | WAV conversion / normalisation |
 
 SSH is already enabled by default on Raspberry Pi OS.
+
+### Build Asterisk from source
+
+Asterisk is not packaged in Debian Trixie. Build it manually:
+
+```bash
+# build dependencies
+sudo apt install -y build-essential libedit-dev uuid-dev libxml2-dev \
+  libsqlite3-dev libjansson-dev libssl-dev
+
+cd /usr/local/src
+sudo wget https://downloads.asterisk.org/pub/telephony/asterisk/asterisk-22-current.tar.gz
+sudo tar xzf asterisk-22-current.tar.gz
+cd asterisk-22.*/
+
+# configure for a minimal SIP/audio build
+sudo contrib/scripts/install_prereq install
+./configure
+make menuselect.makeopts
+# in menuselect: ensure res_pjsip, app_playback, app_dial are selected
+make menuselect
+make -j$(nproc)
+sudo make install
+sudo make samples
+sudo make config   # installs systemd unit
+```
+
+Create the asterisk user:
+```bash
+sudo useradd -r -s /usr/sbin/nologin asterisk
+sudo chown -R asterisk:asterisk /var/lib/asterisk /var/spool/asterisk \
+  /var/log/asterisk /var/run/asterisk /etc/asterisk
+```
 
 ---
 
@@ -188,7 +220,7 @@ sudo systemctl enable systemd-networkd-wait-online.service
 ```bash
 sudo reboot
 # after boot, from another device on the FritzBox WLAN:
-ssh fluxus@192.168.178.42
+ssh fluxus@fluxus
 systemctl status asterisk
 systemctl status fluxus-trigger
 ```

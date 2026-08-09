@@ -88,8 +88,9 @@ exten => _X.,1,NoOp(Fluxus call started — playing ${SOUND})
  same => n,Hangup()
 ```
 
-`**1` is the analog phone's internal number on the FritzBox (adjust if different).
-`${SOUND}` is passed as a channel variable from the trigger script — see Step 6.
+The `[fluxus]` context handles the call once the analog phone picks up.
+The trigger script originates the call via AMI and sets `${SOUND}` to the audio
+file path — see Step 6.
 
 ---
 
@@ -104,8 +105,8 @@ enabled=yes
 port=5038
 bindaddr=127.0.0.1   ; local only, no network exposure
 
-[USER_AMI]
-secret=SECRET_AMI
+[fluxus]
+secret=kx9Qm4vTpL2w
 deny=0.0.0.0/0.0.0.0
 permit=127.0.0.1/255.255.255.0
 read=all
